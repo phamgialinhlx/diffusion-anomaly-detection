@@ -16,6 +16,7 @@ import numpy as np
 import torch as th
 import torch.distributed as dist
 from guided_diffusion.image_datasets import load_data
+from guided_diffusion.LIDC_datasets import load_LIDC
 from guided_diffusion import dist_util, logger
 from guided_diffusion.script_util import (
     NUM_CLASSES,
@@ -50,13 +51,20 @@ def main():
         shuffle=False)
     
     elif args.dataset=='chexpert':
-     data = load_data(
-         data_dir=args.data_dir,
-         batch_size=args.batch_size,
-         image_size=args.image_size,
-         class_cond=True,
-     )
-     datal = iter(data)
+        data = load_data(
+            data_dir=args.data_dir,
+            batch_size=args.batch_size,
+            image_size=args.image_size,
+            class_cond=True,
+        )
+    elif args.dataset=='LIDC':
+        data = load_LIDC(
+            data_dir=args.data_dir,
+            batch_size=args.batch_size,
+            image_size=args.image_size,
+            class_cond=True,
+        )
+    datal = iter(data)
    
     model.load_state_dict(
         dist_util.load_state_dict(args.model_path, map_location="cpu")
@@ -125,6 +133,7 @@ def main():
           print('img1', img[1])
           number=img[1]["path"]
           print('number', number)
+          name = img[1]['path'][0]
 
         if args.class_cond:
             classes = th.randint(
@@ -151,6 +160,7 @@ def main():
         end.record()
         th.cuda.synchronize()
         th.cuda.current_stream().synchronize()
+        np.save("sample_results/" + name + ".npy", sample[0,0, ...].cpu())
 
 
         print('time for 1000', start.elapsed_time(end))
@@ -165,6 +175,12 @@ def main():
           
         elif args.dataset=='chexpert':
           viz.image(visualize(sample[0, ...]), opts=dict(caption="sampled output"+str(name)))
+          diff=abs(visualize(org[0, 0,...])-visualize(sample[0,0, ...]))
+          diff=np.array(diff.cpu())
+          viz.heatmap(np.flipud(diff), opts=dict(caption="diff"))
+
+        elif args.dataset=='LIDC':
+          viz.image(visualize(sample[0, ...]), opts=dict(caption="sampled output "+str(name)))
           diff=abs(visualize(org[0, 0,...])-visualize(sample[0,0, ...]))
           diff=np.array(diff.cpu())
           viz.heatmap(np.flipud(diff), opts=dict(caption="diff"))
@@ -196,7 +212,7 @@ def create_argparser():
     defaults = dict(
         data_dir="",
         clip_denoised=True,
-        num_samples=10,
+        num_samples=1, #default: 10
         batch_size=1,
         use_ddim=False,
         model_path="",
@@ -209,6 +225,7 @@ def create_argparser():
     defaults.update(classifier_defaults())
     parser = argparse.ArgumentParser()
     add_dict_to_argparser(parser, defaults)
+    print("num_samples ", defaults['num_samples'])
     return parser
 
 if __name__ == "__main__":

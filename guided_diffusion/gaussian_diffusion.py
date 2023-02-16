@@ -687,11 +687,11 @@ class GaussianDiffusion:
 
                     if i%100==0:
                      print('i', i)
-                     viz.image(visualize(img[0,0,...]), opts=dict(caption=str(i)))
-                     viz.image(visualize(img[0, 1,...]), opts=dict(caption=str(i)))
-                     viz.image(visualize(img[0, 2,...]), opts=dict(caption=str(i)))
-                     viz.image(visualize(img[0, 3,...]), opts=dict(caption=str(i)))
-                     viz.image(visualize(out["saliency"][0,0,...]), opts=dict(caption='saliency'))
+                    #  viz.image(visualize(img[0,0,...]), opts=dict(caption=str(i)))
+                    #  viz.image(visualize(img[0, 1,...]), opts=dict(caption=str(i)))
+                    #  viz.image(visualize(img[0, 2,...]), opts=dict(caption=str(i)))
+                    #  viz.image(visualize(img[0, 3,...]), opts=dict(caption=str(i)))
+                    #  viz.image(visualize(out["saliency"][0,0,...]), opts=dict(caption='saliency'))
               
 
     def ddim_sample(
@@ -918,10 +918,11 @@ class GaussianDiffusion:
             eta=eta,
         ):
             final = sample
+        # from IPython import embed; embed()
         viz.image(visualize(final["sample"].cpu()[0,0, ...]), opts=dict(caption="final 0" ))
-        viz.image(visualize(final["sample"].cpu()[0,1, ...]), opts=dict(caption="final 1" ))
-        viz.image(visualize(final["sample"].cpu()[0,2, ...]), opts=dict(caption="final 2" ))
-        viz.image(visualize(final["sample"].cpu()[0,3, ...]), opts=dict(caption="final 3" ))
+        # viz.image(visualize(final["sample"].cpu()[0,1, ...]), opts=dict(caption="final 1" ))
+        # viz.image(visualize(final["sample"].cpu()[0,2, ...]), opts=dict(caption="final 2" ))
+        # viz.image(visualize(final["sample"].cpu()[0,3, ...]), opts=dict(caption="final 3" ))
 
 
         return final["sample"], x_noisy, img

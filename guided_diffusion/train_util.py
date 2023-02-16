@@ -18,6 +18,9 @@ viz = Visdom(port=8850)
 INITIAL_LOG_LOSS_SCALE = 20.0
 
 def visualize(img):
+    '''
+    Normalize image.
+    '''
     _min = img.min()
     _max = img.max()
     normalized_img = (img - _min)/ (_max - _min)
@@ -172,6 +175,9 @@ class TrainLoop:
                     self.iterdatal = iter(self.datal)
                     batch, cond, label, _, _ = next(self.iterdatal)
             elif self.dataset=='chexpert':
+                batch, cond = next(self.datal)
+                cond.pop("path", None)
+            elif self.dataset=='LIDC':
                 batch, cond = next(self.datal)
                 cond.pop("path", None)
 

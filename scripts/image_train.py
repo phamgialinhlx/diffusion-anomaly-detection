@@ -9,6 +9,7 @@ sys.path.append(".")
 from guided_diffusion.bratsloader import BRATSDataset
 from guided_diffusion import dist_util, logger
 from guided_diffusion.image_datasets import load_data
+from guided_diffusion.LIDC_datasets import load_LIDC
 from guided_diffusion.resample import create_named_schedule_sampler
 from guided_diffusion.script_util import (
     model_and_diffusion_defaults,
@@ -51,6 +52,16 @@ def main():
             class_cond=True,
         )
         print('dataset is chexpert')
+
+    elif args.dataset == 'LIDC':
+        datal = load_LIDC(
+            data_dir=args.data_dir,
+            batch_size=1,
+            image_size=args.image_size,
+            class_cond=True,
+        )
+        print('dataset is LIDC')
+
 
     logger.log("training...")
     TrainLoop(

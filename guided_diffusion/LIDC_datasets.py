@@ -1,3 +1,4 @@
+import cv2
 import math
 import random
 from pathlib import Path
@@ -71,8 +72,10 @@ def load_LIDC(
             dataset, batch_size=batch_size, shuffle=True, num_workers=1, drop_last=True
         )
     print('lenloader', len(loader))
-    while True:
-        yield from loader
+    return loader
+    # while True:
+        # print('alo')
+        # yield from loader
 
 
 from torch.utils.data import DataLoader, Dataset
@@ -122,6 +125,10 @@ class ImageDataset(Dataset):
 
         numpy_img = np.load(path)
         arr = visualize(numpy_img).astype(np.float32)
+        arr = cv2.resize(arr, (256, 256))
+        arr = np.array([arr]) # CxWxH
+        arr = np.transpose(arr, [1, 2, 0]) # WxHxC
+
 
         out_dict = {}
         if self.local_classes is not None:

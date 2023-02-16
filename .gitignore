@@ -1,1 +1,5 @@
 /results
+# /data/test*
+# /data/train/
+/results_classifier
+/sample_results
